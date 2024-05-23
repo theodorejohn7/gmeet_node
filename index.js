@@ -5,27 +5,30 @@ const { createServer } = require('http');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { useServer } = require('graphql-ws/lib/use/ws');
 const { WebSocketServer } = require('ws');
+const cors = require('cors');
 
 let participants = [];
 
 const allowedOrigins = [
   'https://meet.google.com',
-  'https://hz65v3.csb.app',
   'https://gmeet-fe.vercel.app'
 ];
 
 const app = express();
 app.use(express.json());
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies to be sent
+};
+
+app.use(cors(corsOptions));
 
 // GraphQL schema
 const typeDefs = gql`
@@ -72,7 +75,7 @@ const server = new ApolloServer({ schema });
 await server.start();
 
 // Apply middleware to express app
-server.applyMiddleware({ app, path: '/graphql' });
+server.applyMiddleware({ app, path: '/graphql', cors: false }); // Disable default CORS handling by Apollo
 
 // Create HTTP server
 const httpServer = createServer(app);

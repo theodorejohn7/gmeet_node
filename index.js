@@ -64,11 +64,22 @@ server.applyMiddleware({ app, path: '/graphql', cors: false }); // Disable defau
 // Create HTTP server
 const httpServer = createServer(app);
 
+// // Create WebSocket server
+// const wsServer = new WebSocketServer({
+//   server: httpServer,
+//   path: '/graphql',
+// });
+
 // Create WebSocket server
 const wsServer = new WebSocketServer({
   server: httpServer,
   path: '/graphql',
+  verifyClient: (info, cb) => {
+    // Allow all origins
+    cb(true);
+  },
 });
+
 
 // Use WebSocket server
 useServer({ schema }, wsServer);

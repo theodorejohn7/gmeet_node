@@ -1,14 +1,19 @@
-// import express from "express";
-
 const express = require('express');
 const app = express();
 app.use(express.json());
 
 let participants = [123];
 
+const allowedOrigins = [
+  'https://meet.google.com',
+  'https://hz65v3.csb.app'
+];
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://meet.google.com');
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
@@ -16,12 +21,12 @@ app.use((req, res, next) => {
 
 app.post("/participants", (req, res) => {
   participants = req.body.participants;
-  console.log("Received participants:", participants); // Add this line to debug
+  console.log("Received participants:", participants); // Debugging log
   res.sendStatus(200);
 });
 
 app.get("/participants", (req, res) => {
-  console.log("get called");
+  console.log("GET /participants called");
   res.json(participants);
 });
 

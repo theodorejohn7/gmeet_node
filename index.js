@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const { ApolloServer, gql } = require('apollo-server-express');
 const { createServer } = require('http');
@@ -9,26 +8,11 @@ const cors = require('cors');
 
 let participants = [];
 
-const allowedOrigins = [
-  'https://meet.google.com',
-  'https://gmeet-fe.vercel.app'
-];
-
 const app = express();
 app.use(express.json());
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies to be sent
-};
-
-app.use(cors(corsOptions));
+// Allow all origins
+app.use(cors({ origin: '*', credentials: true }));
 
 // GraphQL schema
 const typeDefs = gql`

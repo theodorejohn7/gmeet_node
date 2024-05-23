@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 // Allow all origins
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors());
 
 // GraphQL schema
 const typeDefs = gql`

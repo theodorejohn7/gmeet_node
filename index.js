@@ -9,10 +9,10 @@ const cors = require('cors');
 let participants = [];
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Allow all origins
-app.use(cors());
 
 // GraphQL schema
 const typeDefs = gql`

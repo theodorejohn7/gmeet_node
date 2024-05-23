@@ -7,7 +7,7 @@ let participants = [123];
 const allowedOrigins = [
   'https://meet.google.com',
   'https://hz65v3.csb.app',
-  'https://gmeet-fe.vercel.app/'
+  'https://gmeet-fe.vercel.app'
 ];
 
 app.use((req, res, next) => {

@@ -9,7 +9,7 @@ const cors = require('cors');
 let participants = [];
 
 const app = express();
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: 'https://meet.google.com', credentials: true }));
 app.use(express.json());
 
 // GraphQL schema
@@ -59,7 +59,7 @@ const server = new ApolloServer({
     // Handle any additional context setup if needed
   },
   cors: {
-    origin: '*', // Allow all origins
+    origin: 'https://meet.google.com', // Allow specific origin
     credentials: true,
   },
 });
@@ -76,7 +76,6 @@ const wsServer = new WebSocketServer({
   server: httpServer,
   path: '/graphql',
   verifyClient: (info, cb) => {
-    // Allow all origins
     cb(true);
   },
 });

@@ -14,7 +14,8 @@ const allowedOrigins = ['https://meet.google.com', 'https://gmeet-fe.vercel.app'
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
+    // if (allowedOrigins.includes(origin) || !origin) {
+    if (origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

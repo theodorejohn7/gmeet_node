@@ -9,7 +9,20 @@ const cors = require('cors');
 let participants = [];
 
 const app = express();
-app.use(cors({ origin: 'https://meet.google.com', credentials: true }));
+
+const allowedOrigins = ['https://meet.google.com', 'https://gmeet-fe.vercel.app'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // GraphQL schema
@@ -36,54 +49,4 @@ const resolvers = {
     participants: () => participants,
   },
   Mutation: {
-    updateParticipants: (_, { participants: newParticipants }) => {
-      participants = newParticipants;
-      pubsub.publish('PARTICIPANTS_UPDATED', { participantsUpdated: participants });
-      return participants;
-    },
-  },
-  Subscription: {
-    participantsUpdated: {
-      subscribe: () => pubsub.asyncIterator(['PARTICIPANTS_UPDATED']),
-    },
-  },
-};
-
-// Create GraphQL schema
-const schema = makeExecutableSchema({ typeDefs, resolvers });
-
-// Create Apollo server
-const server = new ApolloServer({
-  schema,
-  context: ({ req }) => {
-    // Handle any additional context setup if needed
-  },
-  cors: {
-    origin: 'https://meet.google.com', // Allow specific origin
-    credentials: true,
-  },
-});
-await server.start();
-
-// Apply middleware to express app
-server.applyMiddleware({ app, path: '/graphql', cors: false }); // Disable default CORS handling by Apollo
-
-// Create HTTP server
-const httpServer = createServer(app);
-
-// Create WebSocket server
-const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: '/graphql',
-  verifyClient: (info, cb) => {
-    cb(true);
-  },
-});
-
-// Use WebSocket server
-useServer({ schema }, wsServer);
-
-// Start the server
-httpServer.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+    u

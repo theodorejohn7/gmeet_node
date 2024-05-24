@@ -9,10 +9,8 @@ const cors = require('cors');
 let participants = [];
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
-
-// Allow all origins
 
 // GraphQL schema
 const typeDefs = gql`
@@ -55,7 +53,16 @@ const resolvers = {
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 // Create Apollo server
-const server = new ApolloServer({ schema });
+const server = new ApolloServer({
+  schema,
+  context: ({ req }) => {
+    // Handle any additional context setup if needed
+  },
+  cors: {
+    origin: '*', // Allow all origins
+    credentials: true,
+  },
+});
 await server.start();
 
 // Apply middleware to express app
@@ -63,12 +70,6 @@ server.applyMiddleware({ app, path: '/graphql', cors: false }); // Disable defau
 
 // Create HTTP server
 const httpServer = createServer(app);
-
-// // Create WebSocket server
-// const wsServer = new WebSocketServer({
-//   server: httpServer,
-//   path: '/graphql',
-// });
 
 // Create WebSocket server
 const wsServer = new WebSocketServer({
@@ -79,7 +80,6 @@ const wsServer = new WebSocketServer({
     cb(true);
   },
 });
-
 
 // Use WebSocket server
 useServer({ schema }, wsServer);
